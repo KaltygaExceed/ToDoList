@@ -21,7 +21,8 @@ const onClickButton = () => {
         allTasks.push({
             text: valueInput,
             isCheck: false
-        })}
+        })
+    }
     localStorage.setItem('tasks', JSON.stringify(allTasks))
     valueInput = ''
     input.value = ''
@@ -42,9 +43,9 @@ const editTaskHandler = (index, text, imageEdit) => {
     const inputForEditTask = document.createElement("input")
     inputForEditTask.value = text.textContent
     inputForEditTask.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                saveEditTaskHandler(index, inputForEditTask.value)
-            }
+        if (e.key === 'Enter') {
+            saveEditTaskHandler(index, inputForEditTask.value)
+        }
     });
     text.replaceWith(inputForEditTask)
 
@@ -60,23 +61,18 @@ const editTaskHandler = (index, text, imageEdit) => {
     imageEdit.replaceWith(imageEditOk)
 }
 
-
-
-
-
 const saveEditTaskHandler = (index, newValue) => {
     allTasks[index].text = newValue
     localStorage.setItem('tasks', JSON.stringify(allTasks))
-    render ()
+    render()
 }
-
-
 
 render = () => {
     const content = document.getElementById('content-page')
     while (content.firstChild) {
         content.removeChild(content.firstChild)
     }
+
 
     allTasks.map((item, index) => {
 
@@ -121,7 +117,6 @@ render = () => {
             editTaskHandler(index, text, imageEdit)
             localStorage.setItem('tasks', JSON.stringify(allTasks))
         }
-
 
 
         content.appendChild(container)
