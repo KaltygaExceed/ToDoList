@@ -2,28 +2,72 @@ let allTasks = JSON.parse(localStorage.getItem('tasks')) || []
 let valueInput = ''
 let input = null
 
-window.onload = function init() {
+
+window.onload = async function init() {
     input = document.getElementById('add-task')
     input.addEventListener('change', updateValue)
-    render()
-    localStorage.setItem('tasks', JSON.stringify(allTasks))
-
-}
-
-const onChangeCheckbox = (index) => {
-    allTasks[index].isCheck = !allTasks[index].isCheck
-    localStorage.setItem('tasks', JSON.stringify(allTasks))
-    render()
-}
-
-const onClickButton = () => {
-    if (valueInput !== "") {
-        allTasks.push({
-            text: valueInput,
-            isCheck: false
+    try {
+        const resp = await fetch('http://localhost:8000/allTasks', {
+            method: 'GET'
         })
+        let result = await resp.json()
+        allTasks = result.data
+        localStorage.setItem('tasks', JSON.stringify(allTasks))
     }
-    localStorage.setItem('tasks', JSON.stringify(allTasks))
+    catch (err) {
+        console.log(err)
+    }
+    render()
+}
+
+const onChangeCheckbox = async (index) => {
+    try {
+        const resp = await fetch('http://localhost:8000/updateTask', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                id: allTasks[index].id,
+                text:allTasks[index].text ,
+                isCheck: !allTasks[index].isCheck
+            })
+        })
+        let result = await resp.json();
+        allTasks = result.data
+        localStorage.setItem('tasks', JSON.stringify(allTasks))
+    }
+    catch (err) {
+        console.log(err)
+    }
+    render()
+
+}
+
+const onClickButton = async () => {
+    if (valueInput === "") {
+      return
+    }
+    try {
+        const resp = await fetch('http://localhost:8000/createTask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                text: valueInput,
+                isCheck: false
+            })
+        })
+        let result = await resp.json();
+        allTasks = result.data
+        localStorage.setItem('tasks', JSON.stringify(allTasks))
+    }
+    catch (err) {
+        console.log(err)
+    }
     valueInput = ''
     input.value = ''
     render();
@@ -33,9 +77,18 @@ const updateValue = (event) => {
     valueInput = event.target.value;
 }
 
-const deleteTaskHandler = (index) => {
-    allTasks.splice(index, 1)
-    localStorage.setItem('tasks', JSON.stringify(allTasks))
+const deleteTaskHandler = async (id, index) => {
+    try {
+        const resp = await fetch(`http://localhost:8000/deleteTask?id=${id}`, {
+            method: 'DELETE',
+        })
+        let result = await resp.json();
+        allTasks = result.data
+        localStorage.setItem('tasks', JSON.stringify(allTasks))
+    }
+    catch (err) {
+        console.log(err)
+    }
     render()
 }
 
@@ -54,6 +107,7 @@ const editTaskHandler = (index, text, imageEdit) => {
     imageEditOk.width = 26;
     imageEditOk.height = 26;
     imageEditOk.style.marginLeft = '8px';
+
     imageEditOk.addEventListener('click', (e) => {
         saveEditTaskHandler(index, inputForEditTask.value)
         localStorage.setItem('tasks', JSON.stringify(allTasks))
@@ -61,18 +115,36 @@ const editTaskHandler = (index, text, imageEdit) => {
     imageEdit.replaceWith(imageEditOk)
 }
 
-const saveEditTaskHandler = (index, newValue) => {
-    allTasks[index].text = newValue
-    localStorage.setItem('tasks', JSON.stringify(allTasks))
+const saveEditTaskHandler = async (index, newValue) => {
+    try {
+        const resp = await fetch('http://localhost:8000/updateTask', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                id: allTasks[index].id,
+                text: newValue,
+                isCheck: allTasks[index].isCheck
+            })
+        })
+        let result = await resp.json();
+        allTasks = result.data
+        localStorage.setItem('tasks', JSON.stringify(allTasks))
+    }
+    catch (err) {
+        console.log(err)
+    }
     render()
 }
+
 
 render = () => {
     const content = document.getElementById('content-page')
     while (content.firstChild) {
         content.removeChild(content.firstChild)
     }
-
 
     allTasks.map((item, index) => {
 
@@ -109,7 +181,7 @@ render = () => {
         container.appendChild(imageDelete)
 
         imageDelete.onclick = () => {
-            deleteTaskHandler(index)
+            deleteTaskHandler(item.id, index)
             localStorage.setItem('tasks', JSON.stringify(allTasks))
         }
 
