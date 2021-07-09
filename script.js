@@ -2,7 +2,6 @@ let allTasks = JSON.parse(localStorage.getItem('tasks')) || []
 let valueInput = ''
 let input = null
 
-
 window.onload = async function init() {
     input = document.getElementById('add-task')
     input.addEventListener('change', updateValue)
@@ -13,41 +12,16 @@ window.onload = async function init() {
         let result = await resp.json()
         allTasks = result.data
         localStorage.setItem('tasks', JSON.stringify(allTasks))
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
     render()
 }
 
-const onChangeCheckbox = async (index) => {
-    try {
-        const resp = await fetch('http://localhost:8000/updateTask', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({
-                id: allTasks[index].id,
-                text:allTasks[index].text ,
-                isCheck: !allTasks[index].isCheck
-            })
-        })
-        let result = await resp.json();
-        allTasks = result.data
-        localStorage.setItem('tasks', JSON.stringify(allTasks))
-    }
-    catch (err) {
-        console.log(err)
-    }
-    render()
-
-}
-
+//Создание таска
 const onClickButton = async () => {
     if (valueInput === "") {
-      return
+        return
     }
     try {
         const resp = await fetch('http://localhost:8000/createTask', {
@@ -61,11 +35,10 @@ const onClickButton = async () => {
                 isCheck: false
             })
         })
-        let result = await resp.json();
-        allTasks = result.data
+        let result = await resp.json()
+        allTasks.push(result)
         localStorage.setItem('tasks', JSON.stringify(allTasks))
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
     valueInput = ''
@@ -73,25 +46,72 @@ const onClickButton = async () => {
     render();
 }
 
-const updateValue = (event) => {
-    valueInput = event.target.value;
-}
-
-const deleteTaskHandler = async (id, index) => {
+//зачеркнуть текст по чекбоксу
+const onChangeCheckbox = async (index) => {
     try {
-        const resp = await fetch(`http://localhost:8000/deleteTask?id=${id}`, {
-            method: 'DELETE',
+        const resp = await fetch('http://localhost:8000/updateTask', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                _id: allTasks[index]._id,
+                text: allTasks[index].text,
+                isCheck: !allTasks[index].isCheck
+            })
         })
         let result = await resp.json();
         allTasks = result.data
-        localStorage.setItem('tasks', JSON.stringify(allTasks))
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
     render()
 }
 
+
+const updateValue = (event) => {
+    valueInput = event.target.value;
+}
+
+// Удалить таск
+const deleteTaskHandler = async (id, index) => {
+    try {
+        const resp = await fetch(`http://localhost:8000/deleteTask?id=` + id, {
+            method: 'DELETE'
+        })
+        allTasks.splice(index, 1)
+    } catch (err) {
+        console.log(err)
+    }
+
+    render()
+}
+
+//сохранить изменения таска
+const saveEditTaskHandler = async (index, newValue) => {
+    try {
+        const resp = await fetch('http://localhost:8000/updateTask', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                id: allTasks[index].id,
+                text: newValue,
+                isCheck: allTasks[index].isCheck
+            })
+        })
+        let result = await resp.json();
+        allTasks = result.data
+    } catch (err) {
+        console.log(err)
+    }
+    render()
+}
+
+//открытие инпута для изменения таска и создание кнопки сохранения
 const editTaskHandler = (index, text, imageEdit) => {
     const inputForEditTask = document.createElement("input")
     inputForEditTask.value = text.textContent
@@ -110,42 +130,18 @@ const editTaskHandler = (index, text, imageEdit) => {
 
     imageEditOk.addEventListener('click', (e) => {
         saveEditTaskHandler(index, inputForEditTask.value)
-        localStorage.setItem('tasks', JSON.stringify(allTasks))
     })
     imageEdit.replaceWith(imageEditOk)
 }
 
-const saveEditTaskHandler = async (index, newValue) => {
-    try {
-        const resp = await fetch('http://localhost:8000/updateTask', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({
-                id: allTasks[index].id,
-                text: newValue,
-                isCheck: allTasks[index].isCheck
-            })
-        })
-        let result = await resp.json();
-        allTasks = result.data
-        localStorage.setItem('tasks', JSON.stringify(allTasks))
-    }
-    catch (err) {
-        console.log(err)
-    }
-    render()
-}
-
-
+// функция рендера
 render = () => {
     const content = document.getElementById('content-page')
     while (content.firstChild) {
         content.removeChild(content.firstChild)
     }
 
+    //мап всех тасков
     allTasks.map((item, index) => {
 
         const container = document.createElement('div');
@@ -157,7 +153,6 @@ render = () => {
         checkbox.checked = item.isCheck
         checkbox.onchange = function () {
             onChangeCheckbox(index)
-            localStorage.setItem('tasks', JSON.stringify(allTasks))
         }
         container.appendChild((checkbox))
 
@@ -181,13 +176,11 @@ render = () => {
         container.appendChild(imageDelete)
 
         imageDelete.onclick = () => {
-            deleteTaskHandler(item.id, index)
-            localStorage.setItem('tasks', JSON.stringify(allTasks))
+           deleteTaskHandler(item._id, index)
         }
 
         imageEdit.onclick = () => {
             editTaskHandler(index, text, imageEdit)
-            localStorage.setItem('tasks', JSON.stringify(allTasks))
         }
 
 
