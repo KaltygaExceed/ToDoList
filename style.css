@@ -1,6 +1,17 @@
-
-.inputElem{
+.inputElem {
     justify-content: left;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+
+#butt {
+    background: rgb(38 154 142);
+    outline: none;
+    border-radius: 3px;
+    border: 1px solid darkgray;
+    width: 50px;
+    height: 30px;
+    color: white;
 }
 
 #colorPicker {
@@ -11,11 +22,10 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    width:  500px;
+    width: 500px;
     border-radius: 2px;
     margin-left: auto;
     margin-right: auto;
-    padding-bottom: 18px;
     border: 1px gray solid;
 }
 
@@ -28,14 +38,14 @@
 }
 
 h1 {
-    color: #193654	;
+    color: #193654;
 }
 
 img:hover {
     box-shadow: 0 0 5px black;
     fill: #f8f7f5;
 }
- 
+
 #content-page {
     display: flex;
     flex-direction: column;

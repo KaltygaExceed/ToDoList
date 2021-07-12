@@ -78,11 +78,14 @@ const updateValue = (event) => {
 // Удалить таск
 const deleteTaskHandler = async (id, index) => {
     try {
-        const resp = await fetch(`http://localhost:8000/deleteTask?id=` + id, {
+        const responce = await fetch(`http://localhost:8000/deleteTask?id=` + id, {
             method: 'DELETE'
         })
-        allTasks.splice(index, 1)
-    } catch (err) {
+        if (responce.ok) {
+            allTasks.splice(index, 1)
+        }
+    }
+    catch (err) {
         console.log(err)
     }
 
