@@ -19,7 +19,7 @@ window.onload = async function init() {
 }
 
 //Создание таска
-const onClickButton = async () => {
+const onCreateTask = async () => {
     if (valueInput === "") {
         return
     }
@@ -47,22 +47,23 @@ const onClickButton = async () => {
 }
 
 //зачеркнуть текст по чекбоксу
-const onChangeCheckbox = async (index) => {
+const onChangeCheckbox = async ({_id, isCheck, text}) => {
     try {
-        const resp = await fetch('http://localhost:8000/updateTask', {
+        const response = await fetch('http://localhost:8000/updateTask', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'Access-Control-Allow-Origin': '*'
             },
             body: JSON.stringify({
-                _id: allTasks[index]._id,
-                text: allTasks[index].text,
-                isCheck: !allTasks[index].isCheck
+                _id,
+                text,
+                isCheck: !isCheck
             })
         })
-        let result = await resp.json();
-        allTasks = result.data
+        if (response.ok) {
+            allTasks.map(item => item._id === _id && (item.isCheck = !item.isCheck))
+        }
     } catch (err) {
         console.log(err)
     }
@@ -89,35 +90,37 @@ const deleteTaskHandler = async (id, index) => {
 }
 
 //сохранить изменения таска
-const saveEditTaskHandler = async (index, newValue) => {
+const saveEditTaskHandler = async ({_id, isCheck, text}, newValue) => {
     try {
-        const resp = await fetch('http://localhost:8000/updateTask', {
+        const response = await fetch('http://localhost:8000/updateTask', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'Access-Control-Allow-Origin': '*'
             },
             body: JSON.stringify({
-                id: allTasks[index].id,
+                _id,
                 text: newValue,
-                isCheck: allTasks[index].isCheck
+                isCheck,
             })
         })
-        let result = await resp.json();
-        allTasks = result.data
+        if (response.ok) {
+            allTasks.map(item => item._id === _id && (item.text = newValue))
+        }
     } catch (err) {
         console.log(err)
     }
     render()
 }
 
+
 //открытие инпута для изменения таска и создание кнопки сохранения
-const editTaskHandler = (index, text, imageEdit) => {
+const editTaskHandler = (index, text, imageEdit, item) => {
     const inputForEditTask = document.createElement("input")
     inputForEditTask.value = text.textContent
     inputForEditTask.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            saveEditTaskHandler(index, inputForEditTask.value)
+            saveEditTaskHandler(item, inputForEditTask.value)
         }
     });
     text.replaceWith(inputForEditTask)
@@ -129,7 +132,7 @@ const editTaskHandler = (index, text, imageEdit) => {
     imageEditOk.style.marginLeft = '8px';
 
     imageEditOk.addEventListener('click', (e) => {
-        saveEditTaskHandler(index, inputForEditTask.value)
+        saveEditTaskHandler(item, inputForEditTask.value)
     })
     imageEdit.replaceWith(imageEditOk)
 }
@@ -152,7 +155,7 @@ render = () => {
         checkbox.type = 'checkbox'
         checkbox.checked = item.isCheck
         checkbox.onchange = function () {
-            onChangeCheckbox(index)
+            onChangeCheckbox(item)
         }
         container.appendChild((checkbox))
 
@@ -176,11 +179,11 @@ render = () => {
         container.appendChild(imageDelete)
 
         imageDelete.onclick = () => {
-           deleteTaskHandler(item._id, index)
+            deleteTaskHandler(item._id, index)
         }
 
         imageEdit.onclick = () => {
-            editTaskHandler(index, text, imageEdit)
+            editTaskHandler(index, text, imageEdit, item)
         }
 
 

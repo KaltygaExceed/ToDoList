@@ -1,18 +1,30 @@
-body {
-    background: #f8f7f5;
+
+.inputElem{
+    justify-content: left;
+}
+
+#colorPicker {
+    display: inline-flex;
 }
 
 .main-elements-control {
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-direction: column;
-    background: #7faf40;
-    width: 900px;
+    width:  500px;
+    border-radius: 2px;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 50px 50px 50px 50px;
     padding-bottom: 18px;
+    border: 1px gray solid;
+}
+
+#add-task {
+    /*border: none;*/
+    /*outline: none;*/
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 250px;
 }
 
 h1 {
@@ -21,19 +33,15 @@ h1 {
 
 img:hover {
     box-shadow: 0 0 5px black;
-    background: #a9bd89;
+    fill: #f8f7f5;
 }
  
 #content-page {
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
     width: 500px;
-    background: #969583;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 0 0 50px 50px ;
 }
 
 .container-user {
@@ -48,6 +56,9 @@ img:hover {
 .task-container {
     display: flex;
     align-items: center;
+    border: black solid 1px;
+    width: 100%;
+
 }
 
 .text-task {
