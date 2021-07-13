@@ -107,7 +107,11 @@ const saveEditTaskHandler = async ({_id, isCheck, text}, newValue) => {
                 isCheck,
             })
         })
-        if (response.ok) {
+        if
+        // (newValue === '') {
+        //     deleteTaskHandler()
+        // }
+        (response.ok) {
             allTasks.map(item => item._id === _id && (item.text = newValue))
         }
     } catch (err) {
@@ -118,9 +122,10 @@ const saveEditTaskHandler = async ({_id, isCheck, text}, newValue) => {
 
 
 //открытие инпута для изменения таска и создание кнопки сохранения
-const editTaskHandler = (index, text, imageEdit, item) => {
-    const inputForEditTask = document.createElement("input")
+const editTaskHandler = (index, text, item) => {
+    const inputForEditTask = document.createElement("textarea")
     inputForEditTask.value = text.textContent
+    inputForEditTask.className = 'editInput'
     inputForEditTask.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             saveEditTaskHandler(item, inputForEditTask.value)
@@ -128,16 +133,6 @@ const editTaskHandler = (index, text, imageEdit, item) => {
     });
     text.replaceWith(inputForEditTask)
 
-    const imageEditOk = document.createElement('img')
-    imageEditOk.src = 'sources/check.svg'
-    imageEditOk.width = 26;
-    imageEditOk.height = 26;
-    imageEditOk.style.marginLeft = '8px';
-
-    imageEditOk.addEventListener('click', (e) => {
-        saveEditTaskHandler(item, inputForEditTask.value)
-    })
-    imageEdit.replaceWith(imageEditOk)
 }
 
 // функция рендера
@@ -154,39 +149,45 @@ render = () => {
         container.id = `task-${index}`
         container.className = 'task-container'
 
+        const checkboxContainer = document.createElement('div')
+        checkboxContainer.className = 'containerWithCheck'
+        container.appendChild(checkboxContainer)
+
+        const textContainer = document.createElement('div')
+        textContainer.className = 'containerWithText'
+        container.appendChild(textContainer)
+
+        const controlContainer = document.createElement('div')
+        controlContainer.className = 'containerWithControl'
+        container.appendChild(controlContainer)
+
         const checkbox = document.createElement('input')
         checkbox.type = 'checkbox'
+        checkbox.className = 'checkbox'
         checkbox.checked = item.isCheck
         checkbox.onchange = function () {
             onChangeCheckbox(item)
         }
-        container.appendChild((checkbox))
+        checkboxContainer.appendChild((checkbox))
 
         const text = document.createElement('p')
         text.innerText = item.text
         text.className = item.isCheck ? 'text-task done-text' : 'text-task'
-        container.appendChild(text)
+        textContainer.appendChild(text)
 
-        const imageEdit = document.createElement('img')
-        imageEdit.src = 'sources/edit.svg'
-        imageEdit.width = 26;
-        imageEdit.height = 26;
-        imageEdit.style.marginLeft = '8px';
-        container.appendChild(imageEdit)
 
         const imageDelete = document.createElement('img')
         imageDelete.src = 'sources/close.svg'
         imageDelete.width = 26;
         imageDelete.height = 26;
-        imageDelete.style.marginLeft = '8px';
-        container.appendChild(imageDelete)
+        controlContainer.appendChild(imageDelete)
 
         imageDelete.onclick = () => {
             deleteTaskHandler(item._id, index)
         }
 
-        imageEdit.onclick = () => {
-            editTaskHandler(index, text, imageEdit, item)
+        text.ondblclick = () => {
+            editTaskHandler(index, text, item)
         }
 
 
