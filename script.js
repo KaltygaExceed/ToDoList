@@ -1,8 +1,32 @@
 let allTasks = JSON.parse(localStorage.getItem('tasks')) || []
 let valueInput = ''
 let input = null
+let colorPick = document.getElementsByName('colorPicker')
+const colorArray = ['#5e59b4', '#fa9a01', '#1a7602', '#f92c03', '#2fd160', '#4b33ff']
 
+let colorVal = randomColor(0, colorArray.length)
+
+function randomColor(min, max) {
+    let rand = min + Math.random() * (max + 1 - min);
+    return Math.floor(rand);
+}
+
+
+// снятие value с колорпикера
 window.onload = async function init() {
+    function onRadioChange() {
+        colorVal = Number.parseInt(this.value);
+    }
+
+    for (let i = 0; i < colorPick.length; i++) {
+        colorPick[i].onchange = onRadioChange
+        if (colorPick[i].checked) {
+            colorVal = i
+        }
+    }
+
+
+    // Рендер всех тасков
     input = document.getElementById('add-task')
     input.addEventListener('change', updateValue)
     try {
@@ -32,7 +56,8 @@ const onCreateTask = async () => {
             },
             body: JSON.stringify({
                 text: valueInput,
-                isCheck: false
+                isCheck: false,
+                color: colorVal
             })
         })
         let result = await resp.json()
@@ -78,14 +103,13 @@ const updateValue = (event) => {
 // Удалить таск
 const deleteTaskHandler = async (id, index) => {
     try {
-        const responce = await fetch(`http://localhost:8000/deleteTask?id=` + id, {
+        const response = await fetch(`http://localhost:8000/deleteTask?id=` + id, {
             method: 'DELETE'
         })
-        if (responce.ok) {
+        if (response.ok) {
             allTasks.splice(index, 1)
         }
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
 
@@ -94,6 +118,9 @@ const deleteTaskHandler = async (id, index) => {
 
 //сохранить изменения таска
 const saveEditTaskHandler = async ({_id, isCheck, text}, newValue) => {
+    if (newValue === '') {
+        return
+    }
     try {
         const response = await fetch('http://localhost:8000/updateTask', {
             method: 'PATCH',
@@ -108,9 +135,6 @@ const saveEditTaskHandler = async ({_id, isCheck, text}, newValue) => {
             })
         })
         if
-        // (newValue === '') {
-        //     deleteTaskHandler()
-        // }
         (response.ok) {
             allTasks.map(item => item._id === _id && (item.text = newValue))
         }
@@ -148,6 +172,7 @@ render = () => {
         const container = document.createElement('div');
         container.id = `task-${index}`
         container.className = 'task-container'
+        container.style.background = colorArray[item.color]
 
         const checkboxContainer = document.createElement('div')
         checkboxContainer.className = 'containerWithCheck'

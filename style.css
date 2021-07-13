@@ -8,11 +8,10 @@
     display: flex;
     width: 500px;
     margin-bottom: 1px;
-    background: darkslategrey;
+    min-height: 59px;
 }
 
 .containerWithCheck {
-    /*height: 59px;*/
     width: 59px;
     border: 1px white solid;
     display: flex;
@@ -27,7 +26,6 @@
 .containerWithText {
     display: flex;
     width: 382px;
-    /*height: 59px;*/
     border: 1px white solid;
     align-items: center;
     word-wrap: break-word;
