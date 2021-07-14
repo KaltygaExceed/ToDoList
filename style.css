@@ -2,6 +2,9 @@
     justify-content: left;
     padding-bottom: 6px;
     padding-top: 6px;
+    min-width: 500px;
+    border: 1px gray solid;
+    border-radius: 2px;
 }
 
 .task-container {
@@ -9,6 +12,8 @@
     width: 500px;
     margin-bottom: 1px;
     min-height: 59px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .containerWithCheck {
@@ -37,9 +42,9 @@
     margin-left: 11px;
 }
 .done-text {
-     color: rgba(206, 206, 206, 0.3);
      text-decoration: line-through;
  }
+
 
 .editInput {
 background: transparent;
@@ -77,11 +82,10 @@ background: transparent;
     display: flex;
     align-items: center;
     flex-direction: column;
-    width: 500px;
-    border-radius: 2px;
+    /*border-radius: 2px;*/
     margin-left: auto;
     margin-right: auto;
-    border: 1px gray solid;
+    /*border: 1px gray solid;*/
 }
 
 #add-task {
@@ -99,10 +103,15 @@ img:hover {
 #content-page {
     display: flex;
     flex-direction: column;
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
 }
+
+/*#zoneDel {*/
+/*    width: 59px;*/
+/*    height: 59px;*/
+/*    border: black solid 1px;*/
+/*    text-align: center;*/
+/*}*/
+
 
 
 

@@ -1,29 +1,30 @@
 let allTasks = JSON.parse(localStorage.getItem('tasks')) || []
 let valueInput = ''
 let input = null
-let colorPick = document.getElementsByName('colorPicker')
+// let colorPick = document.getElementsByName('colorPicker')
 const colorArray = ['#5e59b4', '#fa9a01', '#1a7602', '#f92c03', '#2fd160', '#4b33ff']
 
-let colorVal = randomColor(0, colorArray.length)
+let currentColor
 
-function randomColor(min, max) {
-    let rand = min + Math.random() * (max + 1 - min);
-    return Math.floor(rand);
+function randomColor() {
+    const randIndex = Math.floor(Math.random() * colorArray.length)
+    return colorArray[randIndex]
 }
 
 
 // снятие value с колорпикера
 window.onload = async function init() {
-    function onRadioChange() {
-        colorVal = Number.parseInt(this.value);
-    }
+    const colors = document.querySelector('#colorPicker')
+    colorArray.map((item, index) => {
+        const radButton = document.createElement('input');
+        radButton.name = `colorPicker`
+        radButton.type = 'radio'
+        radButton.value = `${colorArray[index]}`
+        radButton.onchange = e => currentColor = e.target
+        colors.append(radButton)
+    })
 
-    for (let i = 0; i < colorPick.length; i++) {
-        colorPick[i].onchange = onRadioChange
-        if (colorPick[i].checked) {
-            colorVal = i
-        }
-    }
+
 
 
     // Рендер всех тасков
@@ -57,7 +58,7 @@ const onCreateTask = async () => {
             body: JSON.stringify({
                 text: valueInput,
                 isCheck: false,
-                color: colorVal
+                color: currentColor ? currentColor.value : randomColor()
             })
         })
         let result = await resp.json()
@@ -68,7 +69,11 @@ const onCreateTask = async () => {
     }
     valueInput = ''
     input.value = ''
-    render();
+    if (currentColor) {
+        currentColor.checked = false
+    }
+    currentColor = null
+    render()
 }
 
 //зачеркнуть текст по чекбоксу
@@ -154,7 +159,7 @@ const editTaskHandler = (index, text, item) => {
         if (e.key === 'Enter') {
             saveEditTaskHandler(item, inputForEditTask.value)
         }
-    });
+    })
     text.replaceWith(inputForEditTask)
 
 }
@@ -165,6 +170,9 @@ render = () => {
     while (content.firstChild) {
         content.removeChild(content.firstChild)
     }
+    // while (container.firstChild) {
+    //     content.removeChild(content.firstChild)
+    // }
 
     //мап всех тасков
     allTasks.map((item, index) => {
@@ -172,7 +180,8 @@ render = () => {
         const container = document.createElement('div');
         container.id = `task-${index}`
         container.className = 'task-container'
-        container.style.background = colorArray[item.color]
+        container.className = 'task-container'
+        container.style.background = item.isCheck ? '#c6c4c6' : item.color
 
         const checkboxContainer = document.createElement('div')
         checkboxContainer.className = 'containerWithCheck'
@@ -214,9 +223,39 @@ render = () => {
         text.ondblclick = () => {
             editTaskHandler(index, text, item)
         }
-
-
-        content.appendChild(container)
+        content.append(container)
     })
+
+
+
 }
+
+
+
+
+// const delZone = document.querySelector('#zoneDel')
+//
+// content.ondragover = allowDrop;
+//
+// function allowDrop (event) {
+//     event.preventDefault()
+// }
+//
+// container.ondragstart = drag
+//
+// function drag (event) {
+//     event.dataTransfer.setData('id', event.target.id)
+//     event.dataTransfer.setData('index', event.target.index)
+// }
+//
+// delZone.ondrop = drop
+//
+// function drop(event) {
+//     let itemId = event.dataTransfer.getData('id')
+//     let itemIndex = event.dataTransfer.getData('index')
+//     console.log(itemId)
+//     deleteTaskHandler(itemId, itemIndex)
+// }
+
+
 
