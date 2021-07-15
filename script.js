@@ -11,18 +11,41 @@ function randomColor() {
     return colorArray[randIndex]
 }
 
+function onSelectColor(event) {
+    currentColor = event.target
+    const colors = document.querySelector('#colorPicker')
+    for (let i = 0; i < colors.children.length; i++) {
+      const isInputChecked =  colors.children[i].children[1].checked
+        const realButton = colors.children[i].children[0]
+        if (isInputChecked) {
+            realButton.classList.add("active-color")
+        } else if (realButton.classList.contains('active-color')) {
+                realButton.classList.remove('active-color')
+        }
+    }
+}
+
+
 
 // снятие value с колорпикера
 window.onload = async function init() {
     const colors = document.querySelector('#colorPicker')
     colorArray.map((item, index) => {
+        const labelButton = document.createElement('label')
+        const realButton = document.createElement('div')
+        realButton.className = 'colorButtons'
+        realButton.style.background = item
         const radButton = document.createElement('input');
+        radButton.style.display = "none"
         radButton.name = `colorPicker`
         radButton.type = 'radio'
         radButton.value = `${colorArray[index]}`
-        radButton.onchange = e => currentColor = e.target
-        colors.append(radButton)
+        radButton.onchange = onSelectColor
+        colors.append(labelButton)
+        labelButton.append(realButton)
+        labelButton.append(radButton)
     })
+
 
 
 
@@ -36,7 +59,6 @@ window.onload = async function init() {
         })
         let result = await resp.json()
         allTasks = result.data
-        localStorage.setItem('tasks', JSON.stringify(allTasks))
     } catch (err) {
         console.log(err)
     }
@@ -67,10 +89,18 @@ const onCreateTask = async () => {
     } catch (err) {
         console.log(err)
     }
+    console.log()
     valueInput = ''
     input.value = ''
     if (currentColor) {
         currentColor.checked = false
+    }
+    const colors = document.querySelector('#colorPicker')
+    for (let i = 0; i < colors.children.length; i++) {
+        const realButton = colors.children[i].children[0]
+        if (realButton.classList.contains('active-color')) {
+            realButton.classList.remove('active-color')
+        }
     }
     currentColor = null
     render()
@@ -170,16 +200,12 @@ render = () => {
     while (content.firstChild) {
         content.removeChild(content.firstChild)
     }
-    // while (container.firstChild) {
-    //     content.removeChild(content.firstChild)
-    // }
 
     //мап всех тасков
     allTasks.map((item, index) => {
 
         const container = document.createElement('div');
         container.id = `task-${index}`
-        container.className = 'task-container'
         container.className = 'task-container'
         container.style.background = item.isCheck ? '#c6c4c6' : item.color
 
@@ -231,31 +257,6 @@ render = () => {
 }
 
 
-
-
-// const delZone = document.querySelector('#zoneDel')
-//
-// content.ondragover = allowDrop;
-//
-// function allowDrop (event) {
-//     event.preventDefault()
-// }
-//
-// container.ondragstart = drag
-//
-// function drag (event) {
-//     event.dataTransfer.setData('id', event.target.id)
-//     event.dataTransfer.setData('index', event.target.index)
-// }
-//
-// delZone.ondrop = drop
-//
-// function drop(event) {
-//     let itemId = event.dataTransfer.getData('id')
-//     let itemIndex = event.dataTransfer.getData('index')
-//     console.log(itemId)
-//     deleteTaskHandler(itemId, itemIndex)
-// }
 
 
 

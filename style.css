@@ -1,10 +1,13 @@
 .inputElem {
     justify-content: left;
-    padding-bottom: 6px;
-    padding-top: 6px;
     min-width: 500px;
     border: 1px gray solid;
     border-radius: 2px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    margin-top: 6px;
+    padding: 6px;
 }
 
 .task-container {
@@ -14,6 +17,7 @@
     min-height: 59px;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 5px;
 }
 
 .containerWithCheck {
@@ -26,6 +30,11 @@
 
 .checkbox {
     width: 35%;
+}
+
+.active-color {
+    outline: #fbcd7f 2px solid;
+    outline-offset: 2px;
 }
 
 .containerWithText {
@@ -78,14 +87,19 @@ background: transparent;
     display: inline-flex;
 }
 
+.colorButtons {
+    width: 13px;
+    height: 13px;
+    margin: 5px;
+    padding: 2px;
+}
+
 .main-elements-control {
     display: flex;
     align-items: center;
     flex-direction: column;
-    /*border-radius: 2px;*/
     margin-left: auto;
     margin-right: auto;
-    /*border: 1px gray solid;*/
 }
 
 #add-task {
@@ -93,11 +107,17 @@ background: transparent;
     outline: none;
     margin-top: auto;
     margin-bottom: auto;
-    width: 290px;
+    width: 100%;
+    margin-left: 6px;
 }
 
 img:hover {
     transform: scale(1.25);
+}
+
+.colorButtons:hover {
+    transform: scale(1.25);
+    transition: transform 0.5s;
 }
 
 #content-page {
